@@ -27,19 +27,28 @@ lazy.opts = {}
 lazy.setup({
   {
     'Shatur/neovim-ayu',
-    init = function()
-      local ayu = require'ayu'
-      ayu.setup({
+    priority = 100,
+    lazy = false,
+    config = function()
+      require'ayu'.setup({
         mirage = false,
         override = {},
       })
-      ayu.colorscheme()
+    end,
+    init = function()
+      require'ayu'.colorscheme()
     end
   },
 
   {
+    'nvim-tree/nvim-web-devicons',
+    priority = 100,
+    lazy = false,
+  },
+
+  {
     'nvim-treesitter/nvim-treesitter',
-    init = function()
+    config = function()
       require'nvim-treesitter.configs'.setup {
         ensure_installed = { 
           "cpp", "lua", "vim", "vimdoc", "query", 'bibtex',
@@ -60,21 +69,20 @@ lazy.setup({
 
   {
     'nvim-neo-tree/neo-tree.nvim',
+    priority = 1,
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-tree/nvim-web-devicons',
-      'MunifTanjim/nui.nvim'
+      'MunifTanjim/nui.nvim',
+      'Shatur/neovim-ayu',
     },
     init = function()
-      vim.keymap.set('n', '<leader>e', '<cmd>Neotree source=filesystem position=left reveal=true toggle<cr>')
+      vim.keymap.set('n', '<leader>e', '<cmd>Neotree source=filesystem position=float reveal=true toggle<cr>')
+      vim.keymap.set('n', '<leader>r', '<cmd>Neotree source=filesystem position=left reveal=true toggle<cr>')
       vim.keymap.set('n', '<leader>b', '<cmd>Neotree source=buffers position=float toggle<cr>')
-
+    end,
+    config = function()
       require'neo-tree'.setup({
-        default_component_configs = {
-          container = {
-            enable_character_fade = true
-          },
-        },
         filesystem = {
           hijack_netrw_behavior = 'open_default',
         }
@@ -87,13 +95,14 @@ lazy.setup({
     dependencies = {
       'nvim-tree/nvim-web-devicons',
     },
-    init = function() 
+    config = function() 
       require'barbar'.setup {
         animation = false,
         auto_hide = true,
         tabpages = true
       }
-
+    end,
+    init = function() 
       vim.keymap.set('n', '<A-h>', '<cmd>BufferPrevious<cr>')
       vim.keymap.set('n', '<A-l>', '<cmd>BufferNext<cr>')
     end,
@@ -104,7 +113,7 @@ lazy.setup({
     init = function()
       require'marks'.setup {
         default_appings = true,
-        builtin_marks = { '.', '<', '>', '^' }
+--        builtin_marks = { '.', '<', '>', '^' }
       }
     end,
   },
