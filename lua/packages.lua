@@ -117,5 +117,44 @@ lazy.setup({
       }
     end,
   },
+
+  {
+    'nvim-telescope/telescope.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'BurntSushi/ripgrep',
+      'sharkdp/fd',
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      require'telescope'.setup({
+        pickers = {
+          fd = {theme = 'dropdown'},
+          treesitter = {theme = 'dropdown'},
+        },
+      })
+    end,
+    init = function()
+      local builtin = require'telescope.builtin'
+      vim.keymap.set('n', '<leader>ff', builtin.fd, {})
+      vim.keymap.set('n', '<leader>ft', builtin.treesitter, {})
+    end,
+  },
+
+  {
+    'jvgrootveld/telescope-zoxide',
+    dependencies = {
+      'nvim-lua/popup.nvim',
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+    },
+    config = function()
+      require'telescope'.load_extension'zoxide'
+    end,
+    init = function()
+      vim.keymap.set('n', '<leader>cd', require'telescope'.extensions.zoxide.list)
+    end
+  }
 })
 
