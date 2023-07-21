@@ -1,7 +1,7 @@
 vim.opt.number = true             -- display line numbers in gutter
 vim.opt.ignorecase = true         -- ignore uppercase when searching
 vim.opt.smartcase = true          -- ignore uppercase in search unless uppercase is part of search term
-vim.opt.hlsearch = true           -- don't highlight the search
+vim.opt.hlsearch = false           -- don't highlight the search
 vim.opt.wrap = true               -- wrap long lines
 vim.opt.breakindent = true        -- preserve indentation of wrapped lines
 vim.opt.tabstop = 2               -- tab width
@@ -12,6 +12,8 @@ vim.opt.termguicolors = true
 vim.cmd.colorscheme('default')
 
 vim.opt.cursorline = true
+
+vim.opt.completeopt = 'menuone,noselect'
 
 vim.opt.list = true
 vim.opt.listchars = {
@@ -47,3 +49,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end
 })
 
+vim.api.nvim_create_autocmd('BufWritePre', {
+  group = augroup,
+  command = 'lua vim.lsp.buf.format()',
+  desc = 'Format on Save',
+})

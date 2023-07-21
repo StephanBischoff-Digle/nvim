@@ -18,7 +18,7 @@ function lazy.setup(plugins)
   lazy.install(lazy.path)
 
   vim.opt.rtp:prepend(lazy.path)
-  require'lazy'.setup(plugins, lazy.opts)
+  require 'lazy'.setup(plugins, lazy.opts)
 end
 
 lazy.path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
@@ -26,31 +26,81 @@ lazy.opts = {}
 
 lazy.setup({
   {
+    -- LSP
+    'neovim/nvim-lspconfig',
+    dependencies = {
+      -- Automatically install LSPs to stdpath for neovim
+      { 'williamboman/mason.nvim', config = true },
+      'williamboman/mason-lspconfig.nvim',
+      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+      {'folke/neodev.nvim', opts = {} },
+    },
+  },
+
+  {
+    -- Autocompletion
+    'hrsh7th/nvim-cmp',
+    dependencies = {
+      -- Snipet Engine & its associated nvim-cmp source
+      'L3MON4D3/LuaSnip',
+      'saadparwaiz1/cmp_luasnip',
+      'hrsh7th/cmp-nvim-lsp',
+      'rafamadriz/friendly-snippets',
+    },
+  },
+
+  { 'folke/which-key.nvim', opts = {} },
+
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      require 'lualine'.setup {
+        options = {
+          icons_enabled = false,
+          theme = 'ayu',
+          component_separators = '|',
+          section_separators = '',
+        }
+      }
+    end
+  },
+  {
     'Shatur/neovim-ayu',
-    priority = 100,
+    priority = 1000,
     lazy = false,
     config = function()
-      require'ayu'.setup({
+      require 'ayu'.setup({
         mirage = false,
         override = {},
       })
     end,
     init = function()
-      require'ayu'.colorscheme()
+      require 'ayu'.colorscheme()
     end
   },
 
   {
     'nvim-tree/nvim-web-devicons',
-    priority = 100,
+    priority = 1000,
     lazy = false,
   },
 
   {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+    },
+  },
+
+  {
     'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate',
     config = function()
-      require'nvim-treesitter.configs'.setup {
-        ensure_installed = { 
+      require 'nvim-treesitter.configs'.setup {
+        ensure_installed = {
           "cpp", "lua", "vim", "vimdoc", "query", 'bibtex',
           'latex', 'fish', 'bash', 'gitcommit', 'gitignore',
           'json', 'yaml', 'ledger', 'make', 'cmake', 'python',
@@ -59,13 +109,21 @@ lazy.setup({
         sync_install = true,
         auto_install = false,
 
-        highlight = {
+        highlight = { enable = true },
+        indent = { enable = true },
+        incremental_selection = {
           enable = true,
-          additional_vim_regex_highlighting = false,
+          keymaps = {
+            init_selection = '<C-space>',
+            node_incremental = '<C-space>',
+            scope_incremental = '<C-s>',
+            node_decremental = '<C-backspace>',
+          },
         },
       }
     end
   },
+
 
   {
     'nvim-neo-tree/neo-tree.nvim',
@@ -82,7 +140,7 @@ lazy.setup({
       vim.keymap.set('n', '<leader>b', '<cmd>Neotree source=buffers position=float toggle<cr>')
     end,
     config = function()
-      require'neo-tree'.setup({
+      require 'neo-tree'.setup({
         filesystem = {
           hijack_netrw_behavior = 'open_default',
         }
@@ -91,29 +149,11 @@ lazy.setup({
   },
 
   {
-    'romgrk/barbar.nvim',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-    },
-    config = function() 
-      require'barbar'.setup {
-        animation = false,
-        auto_hide = true,
-        tabpages = true
-      }
-    end,
-    init = function() 
-      vim.keymap.set('n', '<A-h>', '<cmd>BufferPrevious<cr>')
-      vim.keymap.set('n', '<A-l>', '<cmd>BufferNext<cr>')
-    end,
-  },
-
-  {
     'chentoast/marks.nvim',
     init = function()
-      require'marks'.setup {
+      require 'marks'.setup {
         default_appings = true,
---        builtin_marks = { '.', '<', '>', '^' }
+        --        builtin_marks = { '.', '<', '>', '^' }
       }
     end,
   },
@@ -128,17 +168,18 @@ lazy.setup({
       'nvim-tree/nvim-web-devicons',
     },
     config = function()
-      require'telescope'.setup({
+      require 'telescope'.setup({
         pickers = {
-          fd = {theme = 'dropdown'},
-          treesitter = {theme = 'dropdown'},
+          fd = { theme = 'dropdown' },
+          treesitter = { theme = 'dropdown' },
         },
       })
     end,
     init = function()
-      local builtin = require'telescope.builtin'
+      local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>ff', builtin.fd, {})
       vim.keymap.set('n', '<leader>ft', builtin.treesitter, {})
+      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, {})
     end,
   },
 
@@ -150,10 +191,10 @@ lazy.setup({
       'nvim-telescope/telescope.nvim',
     },
     config = function()
-      require'telescope'.load_extension'zoxide'
+      require 'telescope'.load_extension 'zoxide'
     end,
     init = function()
-      vim.keymap.set('n', '<leader>cd', require'telescope'.extensions.zoxide.list)
+      vim.keymap.set('n', '<leader>cd', require 'telescope'.extensions.zoxide.list)
     end
   },
 
@@ -164,7 +205,7 @@ lazy.setup({
       'MunifTanjim/nui.nvim'
     },
     config = function()
-      require'noice'.setup{
+      require 'noice'.setup {
         popupmenu = {
           enable = true,
           backend = 'nui'
