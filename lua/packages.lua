@@ -25,20 +25,23 @@ lazy.path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 lazy.opts = {}
 
 lazy.setup({
-  {
-    -- LSP
+  { -- LSP
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
       { 'williamboman/mason.nvim', config = true },
       'williamboman/mason-lspconfig.nvim',
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-      {'folke/neodev.nvim', opts = {} },
+      {
+        'j-hui/fidget.nvim',
+        tag = 'legacy',
+        event = 'LspAttach',
+        opts = {}
+      },
+      { 'folke/neodev.nvim',       opts = {} },
     },
   },
 
-  {
-    -- Autocompletion
+  { -- Autocompletion
     'hrsh7th/nvim-cmp',
     dependencies = {
       -- Snipet Engine & its associated nvim-cmp source
@@ -51,51 +54,61 @@ lazy.setup({
 
   { 'folke/which-key.nvim', opts = {} },
 
-  {
+  { -- Lualine
     'nvim-lualine/lualine.nvim',
+    event = { 'BufWinEnter' },
     dependencies = {
       'nvim-tree/nvim-web-devicons',
     },
     config = function()
-      require 'lualine'.setup {
-        options = {
-          icons_enabled = false,
-          theme = 'ayu',
-          component_separators = '|',
-          section_separators = '',
-        }
-      }
+      require 'conf.lualine'
     end
   },
   {
-    'Shatur/neovim-ayu',
+    'AlexvZyl/nordic.nvim',
+    branch = 'dev',
     priority = 1000,
-    lazy = false,
     config = function()
-      require 'ayu'.setup({
-        mirage = false,
-        override = {},
-      })
+      require 'nordic'.load {
+        cursorline = {
+          theme = 'dark',
+          bold = false,
+          bold_number = true,
+          blend = 0.7,
+        },
+      }
     end,
-    init = function()
-      require 'ayu'.colorscheme()
-    end
   },
 
-  {
+  --  { -- Ayu
+  --    'Shatur/neovim-ayu',
+  --    priority = 1000,
+  --    lazy = false,
+  --    config = function()
+  --      require 'ayu'.setup({
+  --        mirage = false,
+  --        override = {},
+  --      })
+  --    end,
+  --    init = function()
+  --      require 'ayu'.colorscheme()
+  --    end
+  --  },
+
+  { -- Icons
     'nvim-tree/nvim-web-devicons',
     priority = 1000,
     lazy = false,
   },
 
-  {
+  { -- Treesitter textobjects
     'nvim-treesitter/nvim-treesitter-textobjects',
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
     },
   },
 
-  {
+  { -- Treesitter
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     config = function()
@@ -108,6 +121,8 @@ lazy.setup({
         },
         sync_install = true,
         auto_install = false,
+        ignore_install = {},
+        modules = {},
 
         highlight = { enable = true },
         indent = { enable = true },
@@ -121,11 +136,14 @@ lazy.setup({
           },
         },
       }
+      vim.opt.foldmethod = 'expr'
+      vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+      vim.opt.foldenable = false
     end
   },
 
 
-  {
+  { -- NeoTree
     'nvim-neo-tree/neo-tree.nvim',
     priority = 1,
     dependencies = {
@@ -148,7 +166,7 @@ lazy.setup({
     end,
   },
 
-  {
+  { -- Marks
     'chentoast/marks.nvim',
     init = function()
       require 'marks'.setup {
@@ -158,7 +176,7 @@ lazy.setup({
     end,
   },
 
-  {
+  { -- Telescope
     'nvim-telescope/telescope.nvim',
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -183,7 +201,7 @@ lazy.setup({
     end,
   },
 
-  {
+  { -- Telescope Zoxide
     'jvgrootveld/telescope-zoxide',
     dependencies = {
       'nvim-lua/popup.nvim',
@@ -198,11 +216,12 @@ lazy.setup({
     end
   },
 
-  {
+  { -- Noice
     'folke/noice.nvim',
     event = 'VeryLazy',
     dependencies = {
-      'MunifTanjim/nui.nvim'
+      'MunifTanjim/nui.nvim',
+      { 'rcarriga/nvim-notify', config = function() vim.notify = require 'notify' end },
     },
     config = function()
       require 'noice'.setup {
@@ -210,8 +229,34 @@ lazy.setup({
           enable = true,
           backend = 'nui'
         },
+        messages = {
+          enabled = true,
+          view = 'notify',
+          view_error = 'notify',
+          view_warn = 'notify',
+          view_history = 'messages',
+          view_search = 'virtualtext',
+        },
+        notify = {
+          progress = {
+            enabled = true,
+            format = 'lsp_progress',
+            format_done = 'lsp_progress_done',
+            throttle = 1000 / 30,
+            view = 'mini',
+          }
+        }
       }
     end
   },
-})
 
+  {
+    'RRethy/vim-illuminate',
+    event = { 'User LazyVimStarted' },
+  },
+  {
+    'lewis6991/gitsigns.nvim',
+    event = { 'User LazyVimStarted' },
+    config = function() require 'gitsigns'.setup {} end,
+  },
+})
