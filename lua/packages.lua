@@ -54,7 +54,7 @@ lazy.setup({
           "cpp", "lua", "vim", "vimdoc", "query", 'bibtex',
           'latex', 'fish', 'bash', 'gitcommit', 'gitignore',
           'json', 'yaml', 'ledger', 'make', 'cmake', 'python',
-          'rust', 'toml'
+          'rust', 'toml', 'markdown', 'markdown_inline', 'regex'
         },
         sync_install = true,
         auto_install = false,
@@ -155,6 +155,22 @@ lazy.setup({
     init = function()
       vim.keymap.set('n', '<leader>cd', require'telescope'.extensions.zoxide.list)
     end
-  }
+  },
+
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    dependencies = {
+      'MunifTanjim/nui.nvim'
+    },
+    config = function()
+      require'noice'.setup{
+        popupmenu = {
+          enable = true,
+          backend = 'nui'
+        },
+      }
+    end
+  },
 })
 
