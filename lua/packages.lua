@@ -70,12 +70,16 @@ lazy.setup({
     priority = 1000,
     config = function()
       require 'nordic'.load {
+        bold_keywords = false,
+        bright_border = true,
         cursorline = {
           theme = 'dark',
           bold = false,
           bold_number = true,
           blend = 0.7,
         },
+        noice = { style = 'flat' },
+        telescope = { style = 'flat' },
       }
     end,
   },
@@ -159,8 +163,14 @@ lazy.setup({
     end,
     config = function()
       require 'neo-tree'.setup({
+        popup_border_style = 'rounded',
         filesystem = {
           hijack_netrw_behavior = 'open_default',
+        },
+        default_component_config = {
+          name = {
+            use_git_status_color = false,
+          }
         }
       })
     end,
